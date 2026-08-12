@@ -233,6 +233,17 @@ class SessionOrchestrator:
             elif mtype == "register":
                 asyncio.create_task(self._handle_register(msg))
 
+            # ── Consent (must arrive before start) ───────────────────────────
+            elif mtype == "consent":
+                if self.meta_writer:
+                    self.meta_writer.set_consent(
+                        first_name=msg.get("first_name", ""),
+                        last_name =msg.get("last_name",  ""),
+                        email     =msg.get("email",      ""),
+                        lang      =msg.get("lang",       "fr"),
+                        timestamp =msg.get("timestamp",  time.time()),
+                    )
+
             # ── Session control (only valid after registration) ───────────────
             elif mtype == "start":
                 if not self._ready:

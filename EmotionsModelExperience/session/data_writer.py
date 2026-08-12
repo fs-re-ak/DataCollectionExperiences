@@ -175,6 +175,22 @@ class MetaWriter:
             "rng_seed":     rng_seed,
         })
 
+    def set_consent(
+        self,
+        first_name: str,
+        last_name:  str,
+        email:      str,
+        lang:       str,
+        timestamp:  float,
+    ) -> None:
+        self._meta["consent"] = {
+            "first_name": first_name,
+            "last_name":  last_name,
+            "email":      email,
+            "lang":       lang,
+            "timestamp":  timestamp,
+        }
+
     def set_notes(self, notes: str) -> None:
         self._meta["notes"] = notes
 

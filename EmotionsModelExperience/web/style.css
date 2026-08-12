@@ -835,6 +835,148 @@ html, body {
 
 #lightbox-close:hover { background: #2a3248; color: var(--fg); }
 
+/* ── Consent screen ───────────────────────────────────────────────────────── */
+.consent-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  padding: 32px 40px;
+  width: min(720px, 96vw);
+  max-height: 92vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 16px 64px rgba(0,0,0,.7);
+}
+
+.consent-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--panel-border);
+}
+
+.consent-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ccc;
+  line-height: 1.4;
+}
+
+.consent-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.consent-section-title {
+  font-size: 0.72rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+}
+
+.consent-section p,
+.consent-attestation p {
+  font-size: 0.83rem;
+  color: #aaa;
+  line-height: 1.65;
+}
+
+.consent-link {
+  color: var(--accent);
+  text-decoration: none;
+}
+.consent-link:hover { text-decoration: underline; }
+
+.consent-attestation {
+  background: rgba(79,195,247,.06);
+  border: 1px solid rgba(79,195,247,.2);
+  border-radius: 8px;
+  padding: 14px 18px;
+}
+
+.consent-attestation p {
+  color: #ccc;
+  font-size: 0.85rem;
+}
+
+.consent-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.consent-field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.consent-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.consent-label {
+  font-size: 0.78rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.consent-input {
+  background: #0d1117;
+  border: 1px solid var(--panel-border);
+  border-radius: 7px;
+  color: var(--fg);
+  padding: 9px 12px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+.consent-input:focus { border-color: var(--accent); }
+
+.consent-field-error {
+  font-size: 0.8rem;
+  color: var(--danger);
+  padding: 4px 0;
+}
+
+.consent-actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 4px;
+}
+
+.consent-btn {
+  flex: 1;
+  padding: 13px;
+  border: none;
+  border-radius: 9px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.consent-btn:not(:disabled):hover  { opacity: 0.85; transform: translateY(-1px); }
+.consent-btn:not(:disabled):active { transform: translateY(0); }
+.consent-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.consent-btn-accept { background: #1f6b37; color: #d2f5dc; }
+.consent-btn-refuse { background: #1e2430; color: #aaa; border: 1px solid var(--panel-border); flex: 0 0 auto; padding-left: 28px; padding-right: 28px; }
+
+/* Scrollbar inside consent card */
+.consent-card::-webkit-scrollbar { width: 5px; }
+.consent-card::-webkit-scrollbar-track { background: transparent; }
+.consent-card::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
 /* ── Bilingual inline spans ───────────────────────────────────────────────── */
 /* .t-fr shown by default; .t-en hidden. Swapped when html.lang-en is set.   */
 .t-en { display: none; }

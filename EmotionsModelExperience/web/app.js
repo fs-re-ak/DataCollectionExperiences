@@ -21,6 +21,7 @@ const RING_CIRCUMFERENCE = 339.3;  // 2π × 54
 const screens = {
   registration: document.getElementById("screen-registration"),
   waiting:      document.getElementById("screen-waiting"),
+  consent:      document.getElementById("screen-consent"),
   baseline:     document.getElementById("screen-baseline"),
   fixation:     document.getElementById("screen-fixation"),
   stimulus:     document.getElementById("screen-stimulus"),
@@ -94,6 +95,13 @@ const els = {
   lightbox:        document.getElementById("lightbox"),
   lightboxBackdrop:document.getElementById("lightbox-backdrop"),
   lightboxClose:   document.getElementById("lightbox-close"),
+  // Consent
+  consentFirst:    document.getElementById("inp-consent-first"),
+  consentLast:     document.getElementById("inp-consent-last"),
+  consentEmail:    document.getElementById("inp-consent-email"),
+  consentError:    document.getElementById("consent-field-error"),
+  btnConsentAccept:document.getElementById("btn-consent-accept"),
+  btnConsentRefuse:document.getElementById("btn-consent-refuse"),
 };
 
 // ── State ────────────────────────────────────────────────────────────────────
@@ -603,6 +611,60 @@ function setLang(newLang) {
   updateBaselineLabel();
 }
 
+// ── Consent screen ────────────────────────────────────────────────────────────
+
+function showConsentScreen() {
+  // Clear previous values and errors
+  els.consentFirst.value  = "";
+  els.consentLast.value   = "";
+  els.consentEmail.value  = "";
+  els.consentError.textContent = "";
+  els.consentError.classList.add("hidden");
+  // Hide experimenter overlay, show consent to participant
+  els.expOverlay.classList.add("hidden");
+  showScreen("consent");
+}
+
+function submitConsent() {
+  const first = els.consentFirst.value.trim();
+  const last  = els.consentLast.value.trim();
+  const email = els.consentEmail.value.trim();
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  if (!first || !last || !email) {
+    const msg = lang === "fr"
+      ? "Veuillez remplir tous les champs."
+      : "Please fill in all fields.";
+    els.consentError.textContent = msg;
+    els.consentError.classList.remove("hidden");
+    return;
+  }
+  if (!emailOk) {
+    const msg = lang === "fr"
+      ? "Adresse courriel invalide."
+      : "Invalid email address.";
+    els.consentError.textContent = msg;
+    els.consentError.classList.remove("hidden");
+    return;
+  }
+
+  send({
+    type:       "consent",
+    first_name: first,
+    last_name:  last,
+    email:      email,
+    lang:       lang,
+    timestamp:  Date.now() / 1000,
+  });
+  send({ type: "start" });
+  setButtons({ start: false, pause: true, resume: false, abort: true });
+}
+
+function refuseConsent() {
+  showScreen("waiting");
+  els.expOverlay.classList.remove("hidden");
+}
+
 // ── Registration event wiring ────────────────────────────────────────────────
 
 // PID input validation → enable/disable submit
@@ -656,7 +718,9 @@ document.addEventListener("keydown", e => {
 
 // ── Overlay button wiring ────────────────────────────────────────────────────
 
-els.btnStart.addEventListener("click",  () => send({ type: "start" }));
+els.btnStart.addEventListener("click",  showConsentScreen);
+els.btnConsentAccept.addEventListener("click", submitConsent);
+els.btnConsentRefuse.addEventListener("click", refuseConsent);
 els.btnPause.addEventListener("click",  () => send({ type: "pause" }));
 els.btnResume.addEventListener("click", () => send({ type: "resume" }));
 els.btnAbort.addEventListener("click",  () => {
