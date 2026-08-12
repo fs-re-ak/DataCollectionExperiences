@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jeu de données EMG facial des émotions — Protocole de collecte de données</title>
+  <style>
+    /* ── Reset & Base ─────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:   #1a2e45;
+      --blue:   #2c5f8a;
+      --light-blue: #ddeaf5;
+      --accent: #3a7bbf;
+      --mid:    #5a7a96;
+      --gray:   #6b7280;
+      --light:  #f4f7fb;
+      --border: #d0dce8;
+      --text:   #1c2c3e;
+      --white:  #ffffff;
+      --mirror-on:  #e8f4ec;
+      --mirror-off: #fef7ec;
+      --mirror-on-border:  #4caf7d;
+      --mirror-off-border: #e2973a;
+    }
+
+    html { font-size: 15px; scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      color: var(--text);
+      background: var(--white);
+      line-height: 1.75;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+    }
+
+    /* ── Typography ───────────────────────────────────────────────── */
+    h1, h2, h3, h4 {
+      font-family: 'Georgia', serif;
+      color: var(--navy);
+      line-height: 1.3;
+    }
+
+    h1 { font-size: 2rem; font-weight: bold; margin-bottom: 0.4rem; }
+    h2 { font-size: 1.35rem; border-bottom: 2px solid var(--blue); padding-bottom: 0.4rem;
+         margin: 2.8rem 0 1rem; color: var(--blue); }
+    h3 { font-size: 1.1rem; margin: 1.8rem 0 0.6rem; color: var(--navy); }
+    h4 { font-size: 0.95rem; margin: 1.2rem 0 0.4rem; color: var(--mid); text-transform: uppercase;
+         letter-spacing: 0.06em; }
+
+    p { margin-bottom: 0.9rem; }
+    ul, ol { margin: 0.5rem 0 1rem 1.6rem; }
+    li { margin-bottom: 0.3rem; }
+    strong { color: var(--navy); }
+    em { color: var(--mid); }
+    code { font-family: 'Courier New', monospace; font-size: 0.85rem;
+           background: var(--light); padding: 0.1em 0.4em; border-radius: 3px; color: var(--blue); }
+    a { color: var(--accent); }
+
+    /* ── Cover Block ──────────────────────────────────────────────── */
+    .cover {
+      border: 1px solid var(--border);
+      background: var(--light);
+      padding: 2.5rem 2.5rem 2rem;
+      margin-bottom: 2.5rem;
+      border-radius: 4px;
+    }
+    .cover .subtitle {
+      font-size: 1rem; color: var(--mid); margin-top: 0.3rem; font-style: italic;
+    }
+    .cover-meta {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem 2rem;
+      margin-top: 1.6rem; font-size: 0.88rem; color: var(--gray);
+    }
+    .cover-meta span strong { color: var(--navy); }
+    .version-badge {
+      display: inline-block; background: var(--blue); color: white;
+      font-size: 0.75rem; font-family: sans-serif; font-weight: 600;
+      padding: 0.15em 0.7em; border-radius: 20px; vertical-align: middle; margin-left: 0.5rem;
+    }
+
+    /* ── Table of Contents ────────────────────────────────────────── */
+    .toc {
+      background: var(--light); border: 1px solid var(--border);
+      padding: 1.5rem 2rem; border-radius: 4px; margin-bottom: 2.5rem;
+    }
+    .toc h2 { border-bottom: none; margin-top: 0; font-size: 1.05rem; margin-bottom: 0.8rem; }
+    .toc ol { margin-left: 1.2rem; }
+    .toc li { margin-bottom: 0.2rem; font-size: 0.9rem; }
+    .toc a { text-decoration: none; color: var(--blue); }
+    .toc a:hover { text-decoration: underline; }
+
+    /* ── Tables ───────────────────────────────────────────────────── */
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.88rem; }
+    thead tr { background: var(--navy); color: white; }
+    thead th { padding: 0.65rem 0.9rem; text-align: left; font-weight: 600;
+               font-family: sans-serif; font-size: 0.8rem; letter-spacing: 0.04em; }
+    tbody tr:nth-child(even) { background: var(--light); }
+    tbody td { padding: 0.6rem 0.9rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .table-caption { font-size: 0.8rem; color: var(--gray); font-style: italic; margin-top: -0.8rem; margin-bottom: 1.2rem; }
+
+    /* ── Info / Note / Warning boxes ─────────────────────────────── */
+    .note {
+      border-left: 4px solid var(--accent); background: var(--light-blue);
+      padding: 0.8rem 1.2rem; margin: 1rem 0; border-radius: 0 4px 4px 0;
+      font-size: 0.9rem;
+    }
+    .note strong { color: var(--blue); }
+    .warning {
+      border-left: 4px solid #c0392b; background: #fdf2f2;
+      padding: 0.8rem 1.2rem; margin: 1rem 0; border-radius: 0 4px 4px 0;
+      font-size: 0.9rem;
+    }
+    .warning strong { color: #c0392b; }
+
+    /* ── Checklist ────────────────────────────────────────────────── */
+    .checklist { list-style: none; margin-left: 0; }
+    .checklist li { padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border);
+                    font-size: 0.9rem; display: flex; align-items: flex-start; gap: 0.7rem; }
+    .checklist li::before {
+      content: '☐'; font-size: 1.1rem; line-height: 1; flex-shrink: 0; color: var(--mid);
+    }
+    .checklist li:last-child { border-bottom: none; }
+
+    /* ── Image figures ────────────────────────────────────────────── */
+    figure {
+      margin: 1.5rem 0 2rem; text-align: center;
+    }
+    figure img {
+      max-width: 100%; border: 1px solid var(--border); border-radius: 4px;
+      display: block; margin: 0 auto;
+    }
+    figcaption {
+      margin-top: 0.6rem; font-size: 0.82rem; color: var(--gray);
+      font-style: italic; font-family: sans-serif;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       SESSION TIMELINE DIAGRAM
+    ══════════════════════════════════════════════════════════════ */
+    .timeline {
+      position: relative;
+      margin: 1.5rem 0;
+      padding-left: 1.8rem;
+      border-left: 3px solid var(--border);
+    }
+    .tl-item {
+      position: relative;
+      margin-bottom: 0;
+      padding: 0 0 0 1.2rem;
+    }
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -1.72rem;
+      top: 0.9rem;
+      width: 12px; height: 12px;
+      background: var(--blue);
+      border: 2px solid white;
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px var(--blue);
+    }
+    .tl-box {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.8rem 1.1rem;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+    .tl-box.baseline  { background: #edf6ee; border-color: #4caf7d; }
+    .tl-box.setup     { background: #f0f4fa; border-color: var(--blue); }
+    .tl-box.practice  { background: #f9f5ff; border-color: #9b72cf; }
+    .tl-box.mirror-on { background: var(--mirror-on); border-color: var(--mirror-on-border); }
+    .tl-box.mirror-off { background: var(--mirror-off); border-color: var(--mirror-off-border); }
+    .tl-box.rest      { background: #fafafa; border-color: var(--border); }
+    .tl-label {
+      font-family: sans-serif; font-weight: 700; font-size: 0.8rem;
+      text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem;
+    }
+    .tl-label.mirror-on  { color: var(--mirror-on-border); }
+    .tl-label.mirror-off { color: var(--mirror-off-border); }
+    .tl-label.baseline   { color: #2e7d4f; }
+    .tl-label.setup      { color: var(--blue); }
+    .tl-label.practice   { color: #6a40a8; }
+    .tl-label.rest       { color: var(--gray); }
+    .tl-duration {
+      display: inline-block; font-family: sans-serif; font-size: 0.78rem;
+      background: rgba(0,0,0,0.07); border-radius: 20px;
+      padding: 0.05em 0.6em; margin-left: 0.4rem; vertical-align: middle; color: var(--gray);
+    }
+    .tl-arrow {
+      text-align: center; color: var(--border); font-size: 1.2rem;
+      margin: 0.1rem 0 0.1rem -0.4rem; line-height: 1;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       TRIAL TIMING BAR
+    ══════════════════════════════════════════════════════════════ */
+    .trial-bar-wrap {
+      margin: 1.5rem 0 0.5rem;
+      font-family: sans-serif;
+    }
+    .trial-bar {
+      display: flex;
+      height: 42px;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .tb-seg {
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 600; color: white;
+      text-align: center; letter-spacing: 0.03em;
+      position: relative;
+    }
+    .tb-fixation  { background: #5a7a96; flex: 1; }
+    .tb-stimulus  { background: #2c5f8a; flex: 0.5; }
+    .tb-hold      { background: #1a7a4a; flex: 4; }
+    .tb-relax     { background: #a0825a; flex: 3; }
+
+    .trial-bar-labels {
+      display: flex; margin-top: 0.3rem;
+    }
+    .tbl-seg {
+      text-align: center; font-size: 0.74rem; color: var(--gray);
+    }
+    .tbl-fixation  { flex: 1; }
+    .tbl-stimulus  { flex: 0.5; }
+    .tbl-hold      { flex: 4; }
+    .tbl-relax     { flex: 3; }
+
+    /* ══════════════════════════════════════════════════════════════
+       BLOCK DIAGRAM
+    ══════════════════════════════════════════════════════════════ */
+    .block-diagram {
+      display: flex; gap: 1rem; margin: 1.5rem 0; flex-wrap: wrap;
+    }
+    .block-card {
+      flex: 1; min-width: 200px;
+      border: 2px solid var(--border); border-radius: 6px; overflow: hidden;
+    }
+    .block-header {
+      padding: 0.6rem 1rem; font-family: sans-serif; font-weight: 700;
+      font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .block-header.mirror-on  { background: var(--mirror-on-border); color: white; }
+    .block-header.mirror-off { background: var(--mirror-off-border); color: white; }
+    .block-body {
+      padding: 0.8rem 1rem; font-size: 0.85rem;
+    }
+    .emotion-pills {
+      display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.5rem;
+    }
+    .pill {
+      font-family: sans-serif; font-size: 0.72rem; padding: 0.15em 0.65em;
+      border-radius: 20px; background: var(--light); border: 1px solid var(--border);
+      color: var(--navy);
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       EMOTION TABLE BADGE
+    ══════════════════════════════════════════════════════════════ */
+    .emo-badge {
+      display: inline-block; font-family: sans-serif; font-size: 0.73rem;
+      font-weight: 700; padding: 0.15em 0.7em; border-radius: 20px;
+      letter-spacing: 0.02em; white-space: nowrap;
+    }
+    .emo-neutral  { background: #e8eaed; color: #3c4a5a; }
+    .emo-joy      { background: #fff3cd; color: #7a5c00; }
+    .emo-anger    { background: #fde8e8; color: #8b1a1a; }
+    .emo-disgust  { background: #e8f5e9; color: #2e6b38; }
+    .emo-fear     { background: #ede7f6; color: #4a148c; }
+    .emo-surprise { background: #e3f2fd; color: #1a5276; }
+    .emo-sadness  { background: #e8edf5; color: #2c3e6b; }
+    .emo-contempt { background: #fdf0e8; color: #7a3b00; }
+
+    /* ── Electrode badge ──────────────────────────────────────────── */
+    .elec-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 1.6em; height: 1.6em; border-radius: 50%;
+      font-family: sans-serif; font-weight: 700; font-size: 0.82rem;
+      flex-shrink: 0;
+    }
+    .elec-active { background: #f5e04b; color: #2a2200; border: 1.5px solid #c9b800; }
+    .elec-ref    { background: #4caf7d; color: white; }
+    .elec-bias   { background: #e87a7a; color: white; }
+    .elec-nc     { background: #555; color: white; }
+
+    /* ── Script box ───────────────────────────────────────────────── */
+    .script-box {
+      background: var(--light); border: 1px solid var(--border);
+      border-radius: 4px; padding: 1.2rem 1.5rem; margin: 1rem 0;
+      font-style: italic; font-size: 0.92rem; color: var(--navy);
+      border-left: 5px solid var(--mid);
+    }
+    .script-box p { margin-bottom: 0.6rem; }
+    .script-box p:last-child { margin-bottom: 0; }
+
+    /* ── Event marker table ───────────────────────────────────────── */
+    .marker-code {
+      font-family: 'Courier New', monospace; font-size: 0.84rem;
+      background: var(--navy); color: #90d4f7;
+      padding: 0.1em 0.5em; border-radius: 3px;
+    }
+
+    /* ── Dividers ─────────────────────────────────────────────────── */
+    hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+    /* ── Print ────────────────────────────────────────────────────── */
+    @media print {
+      body { max-width: 100%; padding: 1.5cm 2cm; font-size: 11pt; }
+      h2 { page-break-before: auto; }
+      .block-diagram { page-break-inside: avoid; }
+      .toc { page-break-after: always; }
+      a { color: inherit; text-decoration: none; }
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 1.5rem 1rem; }
+      .cover-meta { grid-template-columns: 1fr; }
+      .block-diagram { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ================================================================
+     COUVERTURE
+================================================================ -->
+<div class="cover">
+  <h1>Jeu de données EMG facial des émotions<br>Protocole de collecte de données</h1>
+  <div class="subtitle">Casque Nucleus-Hermès — Paradigme d'élicitation par mimétisme</div>
+  <div class="cover-meta">
+    <span><strong>Projet :</strong> Modèle des Émotions 2026</span>
+    <span><strong>Version du document :</strong> 1.0 <span class="version-badge">BROUILLON</span></span>
+    <span><strong>Date :</strong> Juin 2026</span>
+    <span><strong>Statut :</strong> Interne — En attente de validation éthique</span>
+    <span><strong>Modalité :</strong> EMG facial / EEG temporal (surface)</span>
+    <span><strong>Jeu d'émotions :</strong> 8 catégories de base (Ekman, 1992)</span>
+  </div>
+</div>
+
+<!-- ================================================================
+     SOMMAIRE
+================================================================ -->
+<nav class="toc">
+  <h2>Sommaire</h2>
+  <ol>
+    <li><a href="#overview">Vue d'ensemble et objectifs</a></li>
+    <li><a href="#participants">Critères de participation</a></li>
+    <li><a href="#equipment">Équipement et configuration technique</a></li>
+    <li><a href="#emotions">Jeu d'émotions et cibles musculaires</a></li>
+    <li><a href="#session">Protocole de session complet</a>
+      <ol>
+        <li><a href="#timeline">Chronologie de la session</a></li>
+        <li><a href="#setup-checklist">Liste de vérification de l'équipement</a></li>
+        <li><a href="#baseline">Enregistrement de la ligne de base neutre</a></li>
+        <li><a href="#practice">Bloc d'entraînement</a></li>
+        <li><a href="#blocks">Blocs expérimentaux</a></li>
+        <li><a href="#trial">Structure et temporisation des essais</a></li>
+        <li><a href="#randomization">Règles de randomisation</a></li>
+        <li><a href="#interblock">Pause inter-blocs</a></li>
+      </ol>
+    </li>
+    <li><a href="#stimulus">Conception des stimuli</a></li>
+    <li><a href="#datalog">Journalisation et conventions de fichiers</a></li>
+    <li><a href="#script">Script d'instructions pour l'expérimentateur</a></li>
+    <li><a href="#appendix">Annexe — Schémas</a></li>
+  </ol>
+</nav>
+
+<!-- ================================================================
+     1. VUE D'ENSEMBLE
+================================================================ -->
+<section id="overview">
+  <h2>1. Vue d'ensemble et objectifs</h2>
+
+  <p>Ce protocole décrit les procédures de collecte d'un jeu de données d'électromyographie (EMG) faciale de surface, étiqueté et destiné à l'entraînement et à l'évaluation d'un modèle automatisé de reconnaissance des émotions faciales. Les données sont enregistrées à l'aide du casque portable <strong>Nucleus-Hermès</strong>, qui fournit 7 canaux EMG facial et 1 canal EEG temporal (250 Hz, électrodes PCB plaquées or).</p>
+
+  <p>Les participants sont invités à produire <strong>huit expressions faciales prototypiques</strong> correspondant aux catégories d'émotions de base établies par Ekman &amp; Friesen (1992) : Neutral, Happiness, Anger, Disgust, Fear, Surprise, Sadness et Contempt. L'élicitation des expressions suit un <strong>paradigme de mimétisme structuré</strong>, dans lequel chaque essai présente un stimulus image étiqueté accompagné d'une consigne. Une condition de retour miroir est appliquée dans deux des trois blocs expérimentaux afin de soutenir la qualité des expressions et de permettre des corrections intra-sujet.</p>
+
+  <h3>Objectifs principaux</h3>
+  <ul>
+    <li>Constituer un jeu de données EMG facial de haute qualité, étiqueté sur 8 catégories d'émotions.</li>
+    <li>Établir des signatures EMG intra-sujet pour les expressions faciales prototypiques.</li>
+    <li>Fournir un jeu de données de référence pour l'entraînement et l'évaluation de classificateurs d'émotions basés sur l'EMG.</li>
+  </ul>
+
+  <h3>Justification scientifique</h3>
+  <p>L'EMG facial de surface capture l'activité électrique des muscles faciaux sous-jacents avec une haute résolution temporelle et est peu sensible au bruit environnemental. À la différence des systèmes basés sur la vision par ordinateur, les caractéristiques dérivées de l'EMG restent robustes dans des conditions d'éclairage variable et en cas d'occultation partielle. Le casque Nucleus-Hermès permet un enregistrement calibré, multicanal et non invasif directement depuis la surface faciale, ce qui le rend particulièrement adapté aux contextes de collecte de données en milieu naturel.</p>
+
+  <p>Le paradigme de mimétisme est préféré à l'induction spontanée d'émotions car il offre des débuts d'expression déterministes et verrouillés dans le temps, permet l'insertion précise de marqueurs d'événements, et produit une fiabilité d'étiquetage inter-essais constante — des propriétés essentielles pour les applications d'apprentissage automatique supervisé.</p>
+</section>
+
+<!-- ================================================================
+     2. PARTICIPANTS
+================================================================ -->
+<section id="participants">
+  <h2>2. Critères de participation</h2>
+
+  <h3>Critères d'inclusion</h3>
+  <ul>
+    <li>Âgé(e) de 18 ans ou plus.</li>
+    <li>Capable de fournir un consentement éclairé écrit.</li>
+    <li>Aucun trouble moteur facial connu ni affection neuromusculaire affectant l'expression faciale.</li>
+    <li>Vision normale ou corrigée à la normale (capacité à voir clairement l'écran de stimuli).</li>
+    <li>Accepter de porter le casque Nucleus-Hermès pendant toute la durée de la session (~30 minutes).</li>
+  </ul>
+
+  <h3>Critères d'exclusion</h3>
+  <ul>
+    <li>Affections cutanées actives, plaies ou dermatite dans les zones de contact des électrodes.</li>
+    <li>Utilisation actuelle de médicaments connus pour affecter le tonus musculaire facial ou l'expression (p. ex., injections de toxine botulique dans les 3 mois précédents).</li>
+    <li>Conditions diagnostiquées affectant le contrôle des muscles faciaux (p. ex., paralysie de Bell, parésie du nerf facial).</li>
+    <li>Pilosité faciale excessive dans les zones de contact des électrodes empêchant un contact électrode–peau adéquat.</li>
+    <li>Allergie connue au gel conducteur ou aux matériaux adhésifs des électrodes.</li>
+  </ul>
+
+  <h3>Justification de la taille d'échantillon</h3>
+  <p>Chaque session produit 3 époques EMG étiquetées par émotion (une par bloc expérimental), soit un total de <strong>24 essais étiquetés par participant</strong>. Pour la classification basée sur l'EMG, ce nombre par session est suffisant pour l'évaluation du modèle intra-sujet. Les objectifs de taille du jeu de données et de variabilité inter-sujets seront précisés dans l'annexe de conception de l'étude, une fois les objectifs de recrutement confirmés.</p>
+</section>
+
+<!-- ================================================================
+     3. ÉQUIPEMENT
+================================================================ -->
+<section id="equipment">
+  <h2>3. Équipement et configuration technique</h2>
+
+  <h3>3.1 Casque Nucleus-Hermès</h3>
+  <p>Le Nucleus-Hermès est un casque biosignal portable conçu pour l'enregistrement de surface multicanal sur les principaux groupes musculaires faciaux et la région temporale. Le casque repose sur le front et les tempes, avec des bras d'électrodes s'étendant pour contacter les régions faciales clés. Le casque ne comprend pas de caméra d'enregistrement active ; la capture vidéo ne fait pas partie de ce protocole.</p>
+  <ul>
+    <li><strong>Canaux :</strong> 8 canaux actifs — 7 EMG (canaux 1, 2, 3, 4, 6, 7, 8) + 1 EEG (canal 5)</li>
+    <li><strong>Fréquence d'échantillonnage :</strong> 250 Hz</li>
+    <li><strong>Type d'électrode :</strong> Électrodes flexibles PCB plaquées or (<em>gold-plated PCB flex</em>)</li>
+  </ul>
+
+  <figure>
+    <img src="pictures/electrodesPlacement.png" alt="Casque Nucleus-Hermès montrant les positions des électrodes — vues de dessus, latérale et portée" style="max-width: 560px;" />
+    <figcaption>
+      <strong>Figure 1.</strong> Disposition des électrodes du casque Nucleus-Hermès présentée sous trois angles : vue de dessus (haut), vue latérale (centre) et vue frontale portée (bas). Les cercles jaunes indiquent les canaux d'enregistrement actifs (1–8) ; le cercle vert (R) indique l'électrode de référence ; le cercle rose (B) indique l'électrode de biais ; le cercle noir (NC) indique le pad de confort passif (non connecté).
+    </figcaption>
+  </figure>
+
+  <h3>3.2 Référence des canaux d'électrodes</h3>
+
+  <p>Le tableau ci-dessous associe chaque position d'électrode à sa région anatomique cible et aux principaux muscles faciaux qu'elle est destinée à capter.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:60px">Canal</th>
+        <th>Type</th>
+        <th>Région anatomique</th>
+        <th>Muscle(s) cible(s) principal(aux)</th>
+        <th>Émotion(s) concernée(s)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="text-align:center"><span class="elec-badge elec-active">1</span></td>
+        <td>Actif</td>
+        <td>Région supraorbitaire gauche / front</td>
+        <td>Corrugator supercilii (G), Frontalis (G)</td>
+        <td>Anger, Sadness, Fear</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><span class="elec-badge elec-active">2</span></td>
+        <td>Actif</td>
+        <td>Région supraorbitaire droite / front</td>
+        <td>Corrugator supercilii (D), Frontalis (D)</td>
+        <td>Anger, Sadness, Fear</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><span class="elec-badge elec-active">3</span></td>
+        <td>Actif</td>
+        <td>Joue gauche / région zygomatique</td>
+        <td>Zygomaticus major (G), Risorius</td>
+        <td>Happiness, Contempt</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><span class="elec-badge elec-active">4</span></td>
+        <td>Actif</td>
+        <td>Joue droite / région zygomatique</td>
+        <td>Zygomaticus major (D)</td>
+        <td>Happiness, Contempt</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><span class="elec-badge elec-active">5</span></td>
+        <td>Actif — <strong>EEG</strong></td>
+        <td>Oreille droite / région pré-auriculaire</td>
+        <td>Lobe temporal (signal EEG)</td>
+        <td>N/A</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><span class="elec-badge elec-active">6</span></td>
+        <td>Actif</td>
+        <td>Front central / glabelle</td>
+        <td>Procerus, Corrugator supercilii (médial)</td>
+        <td>Disgust, Anger</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><span class="elec-badge elec-active">7</span></td>
+        <td>Actif</td>
+        <td>Région temporale droite / front latéral</td>
+        <td>Frontalis (D latéral), Temporalis</td>
+        <td>Surprise, Fear</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><span class="elec-badge elec-active">8</span></td>
+        <td>Actif</td>
+        <td>Région centrale inférieure / nasolabiale</td>
+        <td>Levator labii superioris, Orbicularis oris</td>
+        <td>Disgust</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><span class="elec-badge elec-bias">B</span></td>
+        <td>Biais</td>
+        <td>Temporal gauche</td>
+        <td>— (rejet de mode commun)</td>
+        <td>N/A</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><span class="elec-badge elec-ref">R</span></td>
+        <td>Référence</td>
+        <td>Temporal droit (mastoïde)</td>
+        <td>— (référence du signal)</td>
+        <td>N/A</td>
+      </tr>
+      <tr>
+        <td style="text-align:center"><span class="elec-badge elec-nc">NC</span></td>
+        <td>Non connecté</td>
+        <td>Sommet central (glabelle supérieure)</td>
+        <td>— (pad de confort passif)</td>
+        <td>N/A</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="table-caption">Tableau 1. Correspondance des canaux d'électrodes du casque Nucleus-Hermès. Canaux 1–4, 6–8 : EMG ; canal 5 : EEG. G = gauche ; D = droite. Fréquence d'échantillonnage : 250 Hz. Type d'électrode : PCB flex plaquée or.</p>
+
+  <div class="note">
+    <strong>Note sur le pad NC :</strong> L'électrode centrale supérieure est physiquement présente pour le confort structurel et l'ajustement correct du casque, mais ne transporte aucun signal. Elle ne doit pas être confondue avec un canal actif lors de l'inspection des données.
+  </div>
+
+  <h3>3.3 Caméra de retour miroir</h3>
+  <p>Une webcam externe est utilisée exclusivement pour fournir un retour miroir en temps réel au participant pendant les Blocs 1 et 3. Cette caméra ne <strong>produit pas</strong> de flux de données enregistré ; elle sert uniquement de source d'affichage en direct.</p>
+  <ul>
+    <li>Positionner la webcam à hauteur des yeux, face au participant, à environ 60–80 cm de distance.</li>
+    <li>S'assurer d'un éclairage adéquat et constant (éclairage frontal diffus, sans ombres marquées sur le visage).</li>
+    <li>Vérifier le cadrage avant chaque session : l'intégralité du visage (de la racine des cheveux au menton, d'une oreille à l'autre) doit être visible dans le panneau miroir.</li>
+    <li>La latence du miroir ne doit pas dépasser 100 ms pour maintenir une expérience de retour naturelle.</li>
+  </ul>
+
+  <h3>3.4 Présentation des stimuli</h3>
+  <ul>
+    <li>Les stimuli sont présentés sur un moniteur placé à environ 60–80 cm du participant, à hauteur des yeux.</li>
+    <li>Dans les blocs avec retour miroir, le flux en direct du visage du participant est affiché dans un panneau secondaire à côté du stimulus.</li>
+    <li>Le logiciel de présentation doit prendre en charge la sortie de marqueurs d'événements (p. ex., déclencheur par port série, flux de marqueurs LSL) synchronisée avec le système d'acquisition EMG.</li>
+  </ul>
+</section>
+
+<!-- ================================================================
+     4. JEU D'ÉMOTIONS
+================================================================ -->
+<section id="emotions">
+  <h2>4. Jeu d'émotions et cibles musculaires</h2>
+
+  <p>Le protocole cible les huit catégories d'émotions de base décrites à l'origine par Ekman &amp; Friesen et opérationnalisées à travers le Facial Action Coding System (FACS). Les unités d'action (UA) FACS primaires et les principaux muscles faciaux sont listés ci-dessous pour servir de référence lors de l'évaluation de la qualité des expressions.</p>
+
+  <figure>
+    <img src="pictures/muscleMap.png" alt="Carte d'activation musculaire faciale pour les 8 catégories d'émotions" style="max-width: 760px;" />
+    <figcaption>
+      <strong>Figure 2.</strong> Zones d'activation des principaux muscles faciaux (surlignées en rouge) associées à chacune des huit catégories d'émotions cibles. Les muscles présentant une activation forte et constante entre les individus sont utilisés comme caractéristiques de classification.
+    </figcaption>
+  </figure>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:110px">Émotion</th>
+        <th>UA FACS primaires</th>
+        <th>Muscles clés activés</th>
+        <th>Consigne d'expression</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="emo-badge emo-neutral">Neutral</span></td>
+        <td>Aucune</td>
+        <td>Tous les muscles faciaux au repos</td>
+        <td>Détendez complètement votre visage. Gardez la mâchoire relâchée, les yeux doux et les lèvres légèrement fermées.</td>
+      </tr>
+      <tr>
+        <td><span class="emo-badge emo-joy">Happiness</span></td>
+        <td>AU6 + AU12</td>
+        <td>Orbicularis oculi (pattes d'oie), Zygomaticus major</td>
+        <td>Souriez largement. Laissez vos joues se soulever et les coins de vos yeux se plisser (sourire de Duchenne).</td>
+      </tr>
+      <tr>
+        <td><span class="emo-badge emo-anger">Anger</span></td>
+        <td>AU4 + AU5 + AU7 + AU23 + AU24</td>
+        <td>Corrugator supercilii, Depressor supercilii, Orbicularis oculi (supérieur), Orbicularis oris</td>
+        <td>Abaissez et rapprochez vos sourcils. Contractez vos paupières inférieures et pressez fermement vos lèvres l'une contre l'autre.</td>
+      </tr>
+      <tr>
+        <td><span class="emo-badge emo-disgust">Disgust</span></td>
+        <td>AU9 + AU15 + AU16 + AU25</td>
+        <td>Levator labii superioris alaeque nasi, Nasalis, Depressor anguli oris</td>
+        <td>Plissez le nez comme si vous sentiez quelque chose de désagréable. Relevez la lèvre supérieure et laissez la bouche s'ouvrir légèrement.</td>
+      </tr>
+      <tr>
+        <td><span class="emo-badge emo-fear">Fear</span></td>
+        <td>AU1 + AU2 + AU4 + AU5 + AU20 + AU26</td>
+        <td>Frontalis (interne et externe), Corrugator supercilii, Levator palpebrae, Platysma</td>
+        <td>Levez les coins internes et externes de vos sourcils, écarquillez les yeux, étirez les coins de la bouche horizontalement et laissez la mâchoire s'ouvrir légèrement.</td>
+      </tr>
+      <tr>
+        <td><span class="emo-badge emo-surprise">Surprise</span></td>
+        <td>AU1 + AU2 + AU5B + AU26 + AU27</td>
+        <td>Frontalis (complet), Levator palpebrae superioris, Masséter (détendu), Ptérygoïdiens</td>
+        <td>Levez les deux sourcils le plus haut possible, ouvrez grands les yeux et laissez la mâchoire tomber.</td>
+      </tr>
+      <tr>
+        <td><span class="emo-badge emo-sadness">Sadness</span></td>
+        <td>AU1 + AU4 + AU15 + AU17</td>
+        <td>Frontalis (chef interne), Corrugator supercilii, Depressor anguli oris, Mentalis</td>
+        <td>Levez les coins internes de vos sourcils et rapprochez-les légèrement. Abaissez les coins de la bouche et laissez le menton se plisser.</td>
+      </tr>
+      <tr>
+        <td><span class="emo-badge emo-contempt">Contempt</span></td>
+        <td>AU12D ou AU14D (unilatéral)</td>
+        <td>Zygomaticus major (unilatéral), Buccinator</td>
+        <td>Relevez un seul coin de la bouche en un demi-sourire unilatéral, comme pour manifester du dédain. L'autre côté du visage doit rester immobile.</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="table-caption">Tableau 2. Jeu d'émotions avec références aux unités d'action FACS et cibles musculaires. Les consignes constituent les instructions verbatim affichées à l'écran lors de la collecte de données.</p>
+
+  <div class="note">
+    <strong>Note sur Contempt :</strong> Contempt est la seule expression asymétrique de l'ensemble. La latéralité (demi-sourire gauche ou droit) doit être notée par participant dans le journal de session, car elle peut affecter l'asymétrie du signal par canal.
+  </div>
+</section>
+
+<!-- ================================================================
+     5. PROTOCOLE DE SESSION
+================================================================ -->
+<section id="session">
+  <h2>5. Protocole de session complet</h2>
+
+  <!-- 5.1 Chronologie -->
+  <section id="timeline">
+    <h3>5.1 Chronologie de la session</h3>
+    <p>Une session complète est estimée à <strong>25–35 minutes</strong>, y compris la préparation de l'équipement, l'entraînement et l'enregistrement. Le segment d'enregistrement seul dure environ <strong>9–10 minutes</strong>.</p>
+
+    <div class="timeline">
+
+      <div class="tl-item">
+        <div class="tl-box setup">
+          <div class="tl-label setup">Préparation de l'équipement <span class="tl-duration">~10–15 min</span></div>
+          Ajustement du casque, vérification du contact des électrodes, contrôle de la qualité du signal, cadrage de la caméra miroir, initialisation du logiciel.
+        </div>
+      </div>
+      <div class="tl-arrow">↓</div>
+
+      <div class="tl-item">
+        <div class="tl-box setup">
+          <div class="tl-label setup">Briefing et consentement du participant <span class="tl-duration">~3–5 min</span></div>
+          Lecture du script d'instructions (Section 8). Le participant signe le formulaire de consentement et a l'opportunité de poser des questions.
+        </div>
+      </div>
+      <div class="tl-arrow">↓</div>
+
+      <div class="tl-item">
+        <div class="tl-box practice">
+          <div class="tl-label practice">Bloc d'entraînement — Mirror ON <span class="tl-duration">~2–3 min</span></div>
+          Les 8 émotions sont présentées une fois avec retour miroir. <em>Aucune donnée enregistrée.</em> Assure la familiarisation motrice avant les essais formels.
+        </div>
+      </div>
+      <div class="tl-arrow">↓</div>
+
+      <div class="tl-item">
+        <div class="tl-box baseline">
+          <div class="tl-label baseline">Ligne de base neutre pré-session <span class="tl-duration">30 s</span></div>
+          Participant au repos complet. Yeux ouverts, regard fixé sur la croix de fixation. <em>Enregistrement actif.</em>
+        </div>
+      </div>
+      <div class="tl-arrow">↓</div>
+
+      <div class="tl-item">
+        <div class="tl-box mirror-on">
+          <div class="tl-label mirror-on">Bloc 1 — Mirror ON <span class="tl-duration">~1 min 4 s</span></div>
+          8 émotions × 1 essai (aléatoire). Retour miroir en direct affiché. Marqueurs d'événements journalisés.
+        </div>
+      </div>
+      <div class="tl-arrow">↓</div>
+
+      <div class="tl-item">
+        <div class="tl-box rest">
+          <div class="tl-label rest">Pause inter-blocs <span class="tl-duration">60 s</span></div>
+          Message « Détendez complètement votre visage » affiché à l'écran. Le participant peut cligner des yeux, avaler et bouger librement. L'expérimentateur confirme la disponibilité avant de continuer.
+        </div>
+      </div>
+      <div class="tl-arrow">↓</div>
+
+      <div class="tl-item">
+        <div class="tl-box mirror-off">
+          <div class="tl-label mirror-off">Bloc 2 — Mirror OFF <span class="tl-duration">~1 min 4 s</span></div>
+          8 émotions × 1 essai (aléatoire). Aucun retour miroir. Le participant s'appuie sur la mémoire motrice établie au Bloc 1.
+        </div>
+      </div>
+      <div class="tl-arrow">↓</div>
+
+      <div class="tl-item">
+        <div class="tl-box rest">
+          <div class="tl-label rest">Pause inter-blocs <span class="tl-duration">60 s</span></div>
+          Identique à ci-dessus.
+        </div>
+      </div>
+      <div class="tl-arrow">↓</div>
+
+      <div class="tl-item">
+        <div class="tl-box mirror-on">
+          <div class="tl-label mirror-on">Bloc 3 — Mirror ON <span class="tl-duration">~1 min 4 s</span></div>
+          8 émotions × 1 essai (aléatoire). Retour miroir rétabli. Dernière opportunité de correction par émotion.
+        </div>
+      </div>
+      <div class="tl-arrow">↓</div>
+
+      <div class="tl-item">
+        <div class="tl-box baseline">
+          <div class="tl-label baseline">Ligne de base neutre post-session <span class="tl-duration">30 s</span></div>
+          Identique à la ligne de base pré-session. Utilisée pour la correction de dérive en cours de session et la comparaison EMG au repos.
+        </div>
+      </div>
+      <div class="tl-arrow">↓</div>
+
+      <div class="tl-item">
+        <div class="tl-box setup">
+          <div class="tl-label setup">Retrait de l'équipement et débriefing <span class="tl-duration">~3–5 min</span></div>
+          Retrait du casque, inspection cutanée, débriefing du participant et période de questions.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- 5.2 Liste de vérification -->
+  <section id="setup-checklist">
+    <h3>5.2 Liste de vérification de l'équipement</h3>
+    <p>Compléter tous les éléments dans l'ordre avant de commencer le briefing du participant.</p>
+    <ul class="checklist">
+      <li>Allumer le casque Nucleus-Hermès et confirmer la version du firmware.</li>
+      <li>Lancer le logiciel d'acquisition et vérifier que les 8 canaux actifs sont en cours de diffusion.</li>
+      <li>Inspecter les pads de contact des électrodes pour détecter toute usure ou contamination ; remplacer si nécessaire.</li>
+      <li>Appliquer le gel conducteur sur les pads d'électrodes actives (1–8) selon les directives du fabricant.</li>
+      <li>Ajuster le casque sur le participant ; régler la tension de la sangle pour un contact sécurisé mais confortable.</li>
+      <li>Vérifier l'impédance des électrodes pour tous les canaux — objectif : inférieure au seuil recommandé par le fabricant.</li>
+      <li>Confirmer le contact et la stabilité du signal des électrodes de biais (B) et de référence (R).</li>
+      <li>Confirmer que le pad NC est en place pour le confort et exclu de tous les canaux d'enregistrement.</li>
+      <li>Vérifier le cadrage de la webcam miroir : visage entier visible, mise au point nette, pas de reflets ni d'ombres parasites sur le flux en direct.</li>
+      <li>Vérifier l'éclairage : illumination frontale diffuse, sans ombres directionnelles marquées sur le visage.</li>
+      <li>Confirmer que le pipeline de marqueurs d'événements est fonctionnel (envoyer un déclencheur de test ; vérifier l'horodatage dans le journal d'acquisition).</li>
+      <li>Confirmer que l'affichage du retour miroir est actif et que la latence est imperceptible (&lt;100 ms).</li>
+      <li>Réaliser un test de qualité du signal de 10 secondes : le participant effectue un froncement de sourcils exagéré ; vérifier des déflexions EMG visibles sur les canaux 1, 2, 6, 7.</li>
+      <li>Enregistrer les métadonnées du participant (ID, numéro de session, date, latéralité pour Contempt) dans le journal de session.</li>
+    </ul>
+  </section>
+
+  <!-- 5.3 Ligne de base -->
+  <section id="baseline">
+    <h3>5.3 Enregistrement de la ligne de base neutre</h3>
+    <p>Deux segments de ligne de base neutre de 30 secondes encadrent l'enregistrement expérimental : l'un immédiatement avant le Bloc 1 et l'autre immédiatement après le Bloc 3. Les deux segments sont enregistrés avec les mêmes canaux actifs que les blocs expérimentaux.</p>
+
+    <h4>Ligne de base pré-session</h4>
+    <p>Enregistrée après confirmation de la configuration de l'équipement et avant le début du bloc d'entraînement. Le participant est invité à maintenir un visage entièrement détendu, les yeux ouverts, fixant une croix de fixation centrale. Ce segment capture le <strong>tonus musculaire au repos avant tout effort expressif</strong> et sert de référence de normalisation primaire par canal.</p>
+
+    <h4>Ligne de base post-session</h4>
+    <p>Enregistrée après la fin du Bloc 3. La procédure est identique. Ce segment capture toute <strong>dérive de la ligne de base en cours de session</strong> due aux changements d'impédance des électrodes, au séchage du gel ou à la fatigue musculaire résiduelle. Les deux lignes de base permettent ensemble une interpolation linéaire de la dérive sur l'ensemble de la session.</p>
+
+    <div class="note">
+      <strong>Important :</strong> Afficher une invite dédiée à l'écran (« Veuillez détendre complètement votre visage — yeux ouverts, mâchoire relâchée ») pendant les deux segments de ligne de base. Ne pas commencer l'enregistrement de la ligne de base avant que le participant soit immobile depuis au moins 3 secondes après tout mouvement précédent.
+    </div>
+  </section>
+
+  <!-- 5.4 Bloc d'entraînement -->
+  <section id="practice">
+    <h3>5.4 Bloc d'entraînement</h3>
+    <p>Un passage d'entraînement non enregistré sur les 8 émotions est administré avant le début de la collecte formelle de données. L'affichage du retour miroir est actif pendant le bloc d'entraînement.</p>
+
+    <p>Objectifs du bloc d'entraînement :</p>
+    <ul>
+      <li>Familiariser le participant avec la séquence d'essais et la temporisation.</li>
+      <li>Permettre la calibration motrice de chaque expression avec une auto-surveillance visuelle.</li>
+      <li>Identifier tout participant ayant des difficultés à produire une expression prototypique afin qu'un entraînement supplémentaire puisse être fourni avant le début de l'enregistrement.</li>
+    </ul>
+
+    <p>Le bloc d'entraînement suit le même format de stimulus que les essais expérimentaux, mais utilise un <strong>paradigme auto-rythmé</strong> : l'expérimentateur avance chaque essai manuellement après avoir confirmé que le participant a produit l'expression avec succès. Les contraintes de temporisation sont assouplies pendant l'entraînement.</p>
+
+    <div class="warning">
+      <strong>Ne pas commencer l'enregistrement avant que</strong> le participant ait démontré les 8 expressions à la satisfaction de l'expérimentateur et ait confirmé qu'il se sent à l'aise pour continuer.
+    </div>
+  </section>
+
+  <!-- 5.5 Blocs expérimentaux -->
+  <section id="blocks">
+    <h3>5.5 Blocs expérimentaux</h3>
+    <p>Trois blocs expérimentaux sont administrés dans un ordre fixe. Chaque bloc contient 8 essais — un par émotion — avec les émotions présentées dans une séquence pseudo-aléatoire (voir Section 5.7).</p>
+
+    <div class="block-diagram">
+      <div class="block-card">
+        <div class="block-header mirror-on">Bloc 1 &nbsp;·&nbsp; Mirror ON</div>
+        <div class="block-body">
+          <strong>Condition :</strong> Retour miroir actif<br>
+          <strong>Essais :</strong> 8 (un par émotion)<br>
+          <strong>Objectif :</strong> Essai de référence avec auto-surveillance visuelle. Fournit au participant un retour en temps réel pour atteindre une expression prototypique avant les tentatives indépendantes.
+          <div class="emotion-pills">
+            <span class="pill">Neutral</span><span class="pill">Happiness</span><span class="pill">Anger</span><span class="pill">Disgust</span>
+            <span class="pill">Fear</span><span class="pill">Surprise</span><span class="pill">Sadness</span><span class="pill">Contempt</span>
+          </div>
+          <p style="margin-top:0.6rem;font-size:0.82rem;color:var(--gray)"><em>Ordre aléatoire ; contrainte de frontière appliquée.</em></p>
+        </div>
+      </div>
+      <div class="block-card">
+        <div class="block-header mirror-off">Bloc 2 &nbsp;·&nbsp; Mirror OFF</div>
+        <div class="block-body">
+          <strong>Condition :</strong> Aucun retour miroir<br>
+          <strong>Essais :</strong> 8 (un par émotion)<br>
+          <strong>Objectif :</strong> Essai indépendant. Le participant produit les expressions à partir de la mémoire motrice établie au Bloc 1, sans renforcement visuel. Il s'agit de la condition de données naturalistiques principale.
+          <div class="emotion-pills">
+            <span class="pill">Neutral</span><span class="pill">Happiness</span><span class="pill">Anger</span><span class="pill">Disgust</span>
+            <span class="pill">Fear</span><span class="pill">Surprise</span><span class="pill">Sadness</span><span class="pill">Contempt</span>
+          </div>
+          <p style="margin-top:0.6rem;font-size:0.82rem;color:var(--gray)"><em>Ordre indépendamment aléatoire ; contrainte de frontière appliquée.</em></p>
+        </div>
+      </div>
+      <div class="block-card">
+        <div class="block-header mirror-on">Bloc 3 &nbsp;·&nbsp; Mirror ON</div>
+        <div class="block-body">
+          <strong>Condition :</strong> Retour miroir actif<br>
+          <strong>Essais :</strong> 8 (un par émotion)<br>
+          <strong>Objectif :</strong> Essai final correctif. Le retour miroir est rétabli, permettant au participant d'affiner chaque expression une dernière fois. Fournit une époque d'ancrage de haute qualité par émotion pour la validation post-hoc des étiquettes.
+          <div class="emotion-pills">
+            <span class="pill">Neutral</span><span class="pill">Happiness</span><span class="pill">Anger</span><span class="pill">Disgust</span>
+            <span class="pill">Fear</span><span class="pill">Surprise</span><span class="pill">Sadness</span><span class="pill">Contempt</span>
+          </div>
+          <p style="margin-top:0.6rem;font-size:0.82rem;color:var(--gray)"><em>Ordre indépendamment aléatoire ; contrainte de frontière appliquée.</em></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="note">
+      <strong>Justification de la condition miroir :</strong> L'ordre Bloc 1 → 2 → 3 (Mirror ON → Mirror OFF → Mirror ON) est délibéré. Le Bloc 1 structure la qualité de l'expression via le retour visuel ; le Bloc 2 capture la production motrice indépendante ; le Bloc 3 fournit une référence finale corrigée. Cette conception évite les effets de persistance liés à des essais prolongés sans miroir et permet des comparaisons intra-sujet entre les conditions miroir.
+    </div>
+  </section>
+
+  <!-- 5.6 Structure des essais -->
+  <section id="trial">
+    <h3>5.6 Structure et temporisation des essais</h3>
+    <p>Chaque essai se compose de trois phases séquentielles : une période de fixation, une période de maintien de l'expression et une période de retour au neutre. La durée totale de l'essai est de <strong>8 secondes</strong>.</p>
+
+    <div class="trial-bar-wrap">
+      <div class="trial-bar">
+        <div class="tb-seg tb-fixation">FIXATION</div>
+        <div class="tb-seg tb-stimulus" style="font-size:0.65rem">STIM</div>
+        <div class="tb-seg tb-hold">MAINTIEN</div>
+        <div class="tb-seg tb-relax">RETOUR AU NEUTRE</div>
+      </div>
+      <div class="trial-bar-labels">
+        <div class="tbl-seg tbl-fixation">1 s</div>
+        <div class="tbl-seg tbl-stimulus">0 s *</div>
+        <div class="tbl-seg tbl-hold">4 s</div>
+        <div class="tbl-seg tbl-relax">3 s</div>
+      </div>
+    </div>
+    <p style="font-size:0.8rem;color:var(--gray);margin-top:0.2rem">* Le stimulus apparaît à la fin de la croix de fixation ; le marqueur d'événement est envoyé à ce moment. Durée totale de l'essai : 8 s.</p>
+
+    <table style="margin-top:1.2rem">
+      <thead>
+        <tr><th>Phase</th><th>Durée</th><th>Contenu à l'écran</th><th>EMG</th><th>Marqueur d'événement</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Fixation</strong></td>
+          <td>1 s</td>
+          <td>Croix de fixation centrale (+) sur fond neutre</td>
+          <td>Enregistrement ; utilisé comme fenêtre de ligne de base par essai</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><strong>Début du stimulus</strong></td>
+          <td>—</td>
+          <td>Étiquette d'émotion + image de référence ; panneau miroir activé (si Bloc 1 ou 3)</td>
+          <td>L'enregistrement continue</td>
+          <td><span class="marker-code">STIM_[EMOTION]_B[N]_T[K]</span></td>
+        </tr>
+        <tr>
+          <td><strong>Maintien de l'expression</strong></td>
+          <td>4 s</td>
+          <td>Le stimulus reste affiché ; barre de progression (optionnelle) décompte</td>
+          <td>Époque de données primaire capturée</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><strong>Retour au neutre</strong></td>
+          <td>3 s</td>
+          <td>Invite « Relax » + icône neutre ; miroir désactivé (si bloc miroir)</td>
+          <td>L'enregistrement continue ; utilisé comme ligne de base post-essai</td>
+          <td><span class="marker-code">RELAX_B[N]_T[K]</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="table-caption">Tableau 3. Décomposition des phases par essai. N = numéro de bloc (1–3) ; K = index d'essai dans le bloc (1–8).</p>
+  </section>
+
+  <!-- 5.7 Randomisation -->
+  <section id="randomization">
+    <h3>5.7 Règles de randomisation</h3>
+    <p>L'ordre de présentation des émotions est indépendamment aléatoire pour chaque bloc, en respectant les contraintes suivantes :</p>
+    <ol>
+      <li><strong>Permutation complète :</strong> Chacune des 8 émotions apparaît exactement une fois par bloc.</li>
+      <li><strong>Absence de répétition aux frontières de blocs :</strong> La première émotion d'un bloc doit différer de la dernière émotion du bloc précédent. Si un tirage aléatoire viole cette contrainte, régénérer la séquence.</li>
+      <li><strong>Positionnement de Contempt :</strong> Contempt ne doit pas apparaître en première ou dernière position dans un bloc dans la mesure du possible, compte tenu de sa dépendance à une coordination unilatérale pouvant nécessiter un temps de préparation légèrement supérieur.</li>
+    </ol>
+
+    <div class="note">
+      <strong>Note d'implémentation :</strong> Les séquences de randomisation pour toutes les sessions doivent être pré-générées, journalisées et stockées avec les fichiers de données de session pour garantir la reproductibilité. La valeur de graine utilisée pour la randomisation de chaque session doit être enregistrée dans le fichier de métadonnées de session.
+    </div>
+  </section>
+
+  <!-- 5.8 Pause inter-blocs -->
+  <section id="interblock">
+    <h3>5.8 Pause inter-blocs</h3>
+    <p>Une période de repos obligatoire de 60 secondes sépare chaque paire de blocs consécutifs. Pendant cet intervalle :</p>
+    <ul>
+      <li>L'écran affiche un message « Repos — détendez complètement votre visage » avec un minuteur visible.</li>
+      <li>Le participant est encouragé à cligner des yeux, avaler et détendre les muscles de la mâchoire et du cou.</li>
+      <li>L'expérimentateur confirme visuellement que le participant semble détendu avant de continuer.</li>
+      <li>Une confirmation de disponibilité manuelle (p. ex., appui sur un bouton ou acquiescement verbal) est requise du participant avant le début du prochain bloc.</li>
+      <li>L'enregistrement EMG se poursuit pendant la période de repos, fournissant un segment de ligne de base au repos intra-session supplémentaire utile pour la surveillance de la dérive.</li>
+    </ul>
+  </section>
+</section>
+
+<!-- ================================================================
+     6. CONCEPTION DES STIMULI
+================================================================ -->
+<section id="stimulus">
+  <h2>6. Conception des stimuli</h2>
+
+  <h3>6.1 Stimulus d'essai standard</h3>
+  <p>Chaque stimulus d'essai se compose de deux éléments présentés simultanément à l'écran :</p>
+  <ul>
+    <li><strong>Étiquette d'émotion :</strong> Le nom de l'émotion cible affiché en grand texte à fort contraste (p. ex., <em>« ANGER »</em>).</li>
+    <li><strong>Image de référence :</strong> Une photographie ou illustration faciale prototypique de l'expression cible. Les images doivent être sélectionnées à partir d'un ensemble de stimuli validé (p. ex., <em>Pictures of Facial Affect</em> d'Ekman &amp; Friesen, ou la <em>Radboud Faces Database</em>) montrant une expression frontale neutre-à-cible.</li>
+  </ul>
+
+  <h3>6.2 Panneau de retour miroir (Blocs 1 et 3)</h3>
+  <p>Dans les blocs avec miroir actif, l'écran est divisé en deux panneaux :</p>
+  <ul>
+    <li><strong>Panneau gauche :</strong> Étiquette d'émotion + image de référence (comme ci-dessus).</li>
+    <li><strong>Panneau droit :</strong> Flux en direct de la webcam miroir externe, fournissant un retour visuel en temps réel au participant. Le flux doit être retourné horizontalement (convention miroir) et recadré pour montrer uniquement le visage.</li>
+  </ul>
+  <p>Le retour miroir doit être désactivé au début de la phase de Retour au Neutre afin d'éviter d'ancrer le visage détendu.</p>
+
+  <h3>6.3 Exigences d'affichage</h3>
+  <ul>
+    <li>Fond d'écran : gris moyen neutre (ni blanc ni noir, afin de minimiser les reflets dans le flux miroir).</li>
+    <li>Le début du stimulus doit être synchronisé avec le marqueur d'événement dans un délai de ±5 ms.</li>
+    <li>Latence du miroir : le délai webcam-affichage ne doit pas dépasser 100 ms pour maintenir une expérience de retour naturelle.</li>
+  </ul>
+</section>
+
+<!-- ================================================================
+     7. JOURNALISATION ET CONVENTIONS DE FICHIERS
+================================================================ -->
+<section id="datalog">
+  <h2>7. Journalisation et conventions de fichiers</h2>
+
+  <h3>7.1 Marqueurs d'événements</h3>
+  <p>Les marqueurs d'événements doivent être insérés dans le flux de données EMG à chacun des points de déclenchement suivants :</p>
+
+  <table>
+    <thead><tr><th>Événement</th><th>Code marqueur</th><th>Description</th></tr></thead>
+    <tbody>
+      <tr><td>Début de session</td><td><span class="marker-code">SESSION_START</span></td><td>Envoyé au démarrage de l'acquisition, avant la ligne de base pré-session.</td></tr>
+      <tr><td>Début de la ligne de base pré-session</td><td><span class="marker-code">BASELINE_PRE_START</span></td><td>Début de la période de repos de 30 s.</td></tr>
+      <tr><td>Fin de la ligne de base pré-session</td><td><span class="marker-code">BASELINE_PRE_END</span></td><td>Fin de la période de repos de 30 s.</td></tr>
+      <tr><td>Début de bloc</td><td><span class="marker-code">BLOCK_START_B[N]_M[0/1]</span></td><td>Numéro de bloc (1–3) ; M = condition miroir (1 = ON, 0 = OFF).</td></tr>
+      <tr><td>Début du stimulus</td><td><span class="marker-code">STIM_[EMOTION]_B[N]_T[K]</span></td><td>Nom de l'émotion, bloc, index d'essai. Envoyé à la frame exacte d'affichage du stimulus.</td></tr>
+      <tr><td>Début du retour au neutre</td><td><span class="marker-code">RELAX_B[N]_T[K]</span></td><td>Début de la phase de retour au neutre de 3 s.</td></tr>
+      <tr><td>Fin de bloc</td><td><span class="marker-code">BLOCK_END_B[N]</span></td><td>Phase de retour au neutre du dernier essai terminée.</td></tr>
+      <tr><td>Début / fin de repos</td><td><span class="marker-code">REST_START / REST_END</span></td><td>Limites de la période de repos inter-blocs.</td></tr>
+      <tr><td>Début de la ligne de base post-session</td><td><span class="marker-code">BASELINE_POST_START</span></td><td>Début de la période de repos de 30 s post-session.</td></tr>
+      <tr><td>Fin de la ligne de base post-session</td><td><span class="marker-code">BASELINE_POST_END</span></td><td>Fin ; signale la fin de l'enregistrement.</td></tr>
+      <tr><td>Fin de session</td><td><span class="marker-code">SESSION_END</span></td><td>Acquisition arrêtée.</td></tr>
+    </tbody>
+  </table>
+  <p class="table-caption">Tableau 4. Codes des marqueurs d'événements. [N] = numéro de bloc (1–3) ; [K] = index d'essai (01–08) ; [EMOTION] = étiquette d'émotion en majuscules.</p>
+
+  <h3>7.2 Convention de nommage des fichiers</h3>
+  <p>Tous les fichiers de session doivent suivre le schéma de nommage ci-dessous :</p>
+  <p><code>HERMES_[PARTICIPANT_ID]_S[SESSION]_[YYYYMMDD]_[FILETYPE].[EXT]</code></p>
+  <p>Exemples :</p>
+  <ul>
+    <li><code>HERMES_P001_S01_20260621_EMG.csv</code> — données biosignaux brutes (7 canaux EMG + 1 canal EEG)</li>
+    <li><code>HERMES_P001_S01_20260621_MARKERS.csv</code> — journal des marqueurs d'événements avec horodatages</li>
+    <li><code>HERMES_P001_S01_20260621_META.json</code> — métadonnées de session (informations participant, graine de randomisation, ID expérimentateur, notes)</li>
+  </ul>
+
+  <h3>7.3 Fichier de métadonnées de session</h3>
+  <p>Le fichier <code>_META.json</code> doit inclure au minimum :</p>
+  <ul>
+    <li>ID participant, âge, latéralité manuelle</li>
+    <li>Latéralité de Contempt (gauche ou droite)</li>
+    <li>Graine de randomisation pour chaque bloc</li>
+    <li>Ordre des émotions par bloc (séquence réelle utilisée)</li>
+    <li>ID expérimentateur</li>
+    <li>Toute note au niveau de l'essai (p. ex., artefact, reprise, problème d'équipement)</li>
+    <li>Évaluation de la qualité du signal par canal (réussi / marginal / échec) au début de la session</li>
+  </ul>
+</section>
+
+<!-- ================================================================
+     8. SCRIPT D'INSTRUCTIONS
+================================================================ -->
+<section id="script">
+  <h2>8. Script d'instructions pour l'expérimentateur</h2>
+  <p>Le texte suivant doit être lu mot pour mot au participant après la configuration de l'équipement et avant le début du bloc d'entraînement.</p>
+
+  <div class="script-box">
+    <p>« Merci de participer à cette étude. Je vais vous expliquer ce que vous allez être amené(e) à faire, et vous êtes libre de poser des questions à tout moment. »</p>
+    <p>« Pendant la session, vous porterez ce casque, qui enregistre les petits signaux électriques produits par les muscles de votre visage. Toutes les données sont stockées de manière sécurisée et anonymisées. »</p>
+    <p>« La session se compose de trois séries. Dans chaque série, je vous montrerai un mot et une image sur l'écran décrivant une expression faciale — par exemple, 'Anger' ou 'Happiness'. Votre tâche consiste simplement à <strong>reproduire cette expression faciale</strong> et à la maintenir pendant quelques secondes. »</p>
+    <p>« Dans certaines séries, vous verrez également une image en direct de votre propre visage sur le côté droit de l'écran. C'est comme un miroir — vous pouvez l'utiliser pour vérifier et ajuster votre expression. »</p>
+    <p>« Avant de commencer l'enregistrement, nous effectuerons un court entraînement pour que vous vous familiarisiez avec la tâche. L'entraînement n'est pas enregistré. »</p>
+    <p>« Il n'y a pas de bonnes ou mauvaises réponses. Faites simplement de votre mieux pour réaliser chaque expression naturellement. Si à tout moment vous vous sentez mal à l'aise ou souhaitez arrêter, veuillez me le faire savoir immédiatement. »</p>
+    <p>« Avez-vous des questions avant de commencer ? »</p>
+  </div>
+
+  <div class="note">
+    <strong>Message inter-blocs (à lire à voix haute à chaque période de repos) :</strong> <em>« C'est la fin du Bloc [N]. Veuillez prendre un moment pour détendre complètement votre visage. Nous continuerons dans environ une minute. Faites-moi signe lorsque vous êtes prêt(e). »</em>
+  </div>
+</section>
+
+<hr />
+
+<!-- ================================================================
+     ANNEXE
+================================================================ -->
+<section id="appendix">
+  <h2>Annexe — Schémas</h2>
+
+  <h3>A1. Chronologie d'un essai unique (8 s)</h3>
+
+  <div class="trial-bar-wrap" style="margin-bottom:1.8rem">
+    <div style="font-family:sans-serif;font-size:0.8rem;color:var(--gray);margin-bottom:0.4rem">Durée totale : 8 secondes par essai</div>
+    <div class="trial-bar" style="height:56px">
+      <div class="tb-seg tb-fixation" style="flex-direction:column;gap:0.1rem">
+        <span>FIXATION</span><span style="font-size:0.65rem;opacity:0.85">1 s</span>
+      </div>
+      <div class="tb-seg tb-hold" style="flex-direction:column;gap:0.1rem">
+        <span>MAINTIEN DE L'EXPRESSION</span><span style="font-size:0.65rem;opacity:0.85">4 s — époque EMG primaire</span>
+      </div>
+      <div class="tb-seg tb-relax" style="flex-direction:column;gap:0.1rem">
+        <span>RETOUR AU NEUTRE</span><span style="font-size:0.65rem;opacity:0.85">3 s</span>
+      </div>
+    </div>
+    <div style="display:flex;margin-top:0.5rem;font-family:sans-serif;font-size:0.75rem;color:var(--gray)">
+      <div style="flex:1;text-align:center">↑ ligne de base par essai<br>croix de fixation</div>
+      <div style="flex:4;text-align:center">↑ début du stimulus = marqueur d'événement<br>étiquette d'émotion + image [+ miroir]</div>
+      <div style="flex:3;text-align:center">↑ invite « Relax » à l'écran<br>miroir désactivé</div>
+    </div>
+  </div>
+
+  <h3>A2. Séquence des blocs et conditions miroir</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Bloc</th>
+        <th>Condition miroir</th>
+        <th>Essais</th>
+        <th>Durée</th>
+        <th>Rôle scientifique</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Bloc 1</strong></td>
+        <td><span style="color:var(--mirror-on-border);font-weight:700">Mirror ON</span></td>
+        <td>8 (1 × 8 émotions)</td>
+        <td>~64 s</td>
+        <td>Calibration ; structuration motrice</td>
+      </tr>
+      <tr>
+        <td><strong>Repos</strong></td>
+        <td>—</td>
+        <td>—</td>
+        <td>60 s</td>
+        <td>Relaxation musculaire ; EMG de base</td>
+      </tr>
+      <tr>
+        <td><strong>Bloc 2</strong></td>
+        <td><span style="color:var(--mirror-off-border);font-weight:700">Mirror OFF</span></td>
+        <td>8 (1 × 8 émotions)</td>
+        <td>~64 s</td>
+        <td>Production indépendante ; jeu de données principal</td>
+      </tr>
+      <tr>
+        <td><strong>Repos</strong></td>
+        <td>—</td>
+        <td>—</td>
+        <td>60 s</td>
+        <td>Relaxation musculaire ; EMG de base</td>
+      </tr>
+      <tr>
+        <td><strong>Bloc 3</strong></td>
+        <td><span style="color:var(--mirror-on-border);font-weight:700">Mirror ON</span></td>
+        <td>8 (1 × 8 émotions)</td>
+        <td>~64 s</td>
+        <td>Essai final correctif ; ancrage qualité</td>
+      </tr>
+    </tbody>
+  </table>
+  <p class="table-caption">Tableau A1. Récapitulatif de la séquence des blocs.</p>
+
+  <h3>A3. Estimation de la durée totale de session</h3>
+  <table>
+    <thead><tr><th>Segment</th><th>Durée</th><th>Cumulatif</th></tr></thead>
+    <tbody>
+      <tr><td>Préparation de l'équipement</td><td>10–15 min</td><td>10–15 min</td></tr>
+      <tr><td>Briefing et consentement</td><td>3–5 min</td><td>13–20 min</td></tr>
+      <tr><td>Bloc d'entraînement (non enregistré)</td><td>2–3 min</td><td>15–23 min</td></tr>
+      <tr><td>Ligne de base pré-session</td><td>30 s</td><td>~24 min</td></tr>
+      <tr><td>Bloc 1 (Mirror ON)</td><td>64 s</td><td>~25 min</td></tr>
+      <tr><td>Pause inter-blocs</td><td>60 s</td><td>~26 min</td></tr>
+      <tr><td>Bloc 2 (Mirror OFF)</td><td>64 s</td><td>~27 min</td></tr>
+      <tr><td>Pause inter-blocs</td><td>60 s</td><td>~28 min</td></tr>
+      <tr><td>Bloc 3 (Mirror ON)</td><td>64 s</td><td>~29 min</td></tr>
+      <tr><td>Ligne de base post-session</td><td>30 s</td><td>~30 min</td></tr>
+      <tr><td>Retrait de l'équipement et débriefing</td><td>3–5 min</td><td><strong>~33–35 min total</strong></td></tr>
+    </tbody>
+  </table>
+  <p class="table-caption">Tableau A2. Estimation de la durée de session. Durée d'enregistrement (lignes de base + blocs expérimentaux) : ~9 min 52 s.</p>
+
+  <hr />
+
+  <p style="font-size:0.8rem;color:var(--gray);text-align:center;margin-top:2rem">
+    <em>Protocole de collecte du jeu de données EMG facial des émotions — Version 1.0 (Brouillon) — Laboratoire RE-AK, 2026</em><br>
+    <em>Ce document est destiné à une révision scientifique interne et à la soumission à un comité d'éthique. Ne pas diffuser sans autorisation.</em>
+  </p>
+</section>
+
+</body>
+</html>

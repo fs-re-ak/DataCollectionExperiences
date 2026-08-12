@@ -1,0 +1,892 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Emotions Model Experience — Participant + Experimenter Styles
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Reset & base ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:          #0d0d0d;
+  --fg:          #f0f0f0;
+  --accent:      #4fc3f7;
+  --accent2:     #81c784;
+  --warn:        #ffb74d;
+  --danger:      #ef5350;
+  --overlay-bg:  rgba(8, 12, 20, 0.92);
+  --panel-bg:    #161b22;
+  --panel-border:#30363d;
+  --radius:      10px;
+  --font-mono:   "Courier New", monospace;
+}
+
+.hidden { display: none !important; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: system-ui, -apple-system, sans-serif;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* ── Participant view ─────────────────────────────────────────────────────── */
+#participant-view {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Screens ──────────────────────────────────────────────────────────────── */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.screen.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.center-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  max-width: 900px;
+  padding: 40px;
+  text-align: center;
+}
+
+/* ── Registration screen ──────────────────────────────────────────────────── */
+.reg-card {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  padding: 32px 36px;
+  width: min(560px, 95vw);
+  max-height: 92vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 16px 64px rgba(0,0,0,.6);
+}
+
+.reg-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 4px;
+}
+
+.lab-logo-sm {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+}
+
+.reg-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ccc;
+  flex: 1;
+}
+
+.reg-section-label {
+  font-size: 0.72rem;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+}
+
+.reg-form {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  align-items: center;
+  gap: 10px 14px;
+}
+
+.reg-label {
+  font-size: 0.85rem;
+  color: #999;
+  text-align: right;
+}
+
+.req { color: var(--danger); }
+
+.reg-input {
+  background: #0d1117;
+  border: 1px solid var(--panel-border);
+  border-radius: 7px;
+  color: var(--fg);
+  padding: 8px 11px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.reg-input:focus { border-color: var(--accent); }
+
+.reg-input-path { font-family: var(--font-mono); font-size: 0.82rem; }
+
+/* Browse row */
+.reg-row-browse {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.reg-btn-browse {
+  background: #1e2430;
+  border: 1px solid var(--panel-border);
+  color: #aaa;
+  border-radius: 7px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.reg-btn-browse:hover { background: #2a3248; color: var(--fg); }
+
+/* BLE section */
+.reg-ble-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reg-btn-scan {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #1a2535;
+  border: 1px solid rgba(79,195,247,.3);
+  color: var(--accent);
+  border-radius: 8px;
+  padding: 9px 18px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.reg-btn-scan:hover:not(:disabled) { background: #1f3045; }
+.reg-btn-scan:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Spinner */
+.spinner {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(79,195,247,.3);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+
+/* .spinner.hidden — handled by .hidden utility above */
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Device select */
+.reg-select {
+  width: 100%;
+  background: #0d1117;
+  border: 1px solid var(--panel-border);
+  border-radius: 7px;
+  color: var(--fg);
+  padding: 9px 11px;
+  font-size: 0.88rem;
+  font-family: var(--font-mono);
+  outline: none;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: border-color 0.2s;
+}
+
+.reg-select:focus { border-color: var(--accent); }
+
+/* Scan & connect status */
+.scan-status, .connect-status {
+  font-size: 0.82rem;
+  color: #777;
+  min-height: 18px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 4px;
+}
+
+.scan-status.ok, .connect-status.ok { color: var(--accent2); }
+.scan-status.err, .connect-status.err { color: var(--danger); }
+
+/* .connect-status.hidden — handled by .hidden utility above */
+
+/* Submit button */
+.btn-register {
+  width: 100%;
+  padding: 13px;
+  background: #1f6b37;
+  color: #d2f5dc;
+  border: none;
+  border-radius: 9px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: opacity 0.15s, transform 0.1s;
+  letter-spacing: 0.03em;
+}
+
+.btn-register:disabled { opacity: 0.3; cursor: not-allowed; }
+.btn-register:not(:disabled):hover { opacity: 0.85; transform: translateY(-1px); }
+.btn-register:not(:disabled):active { transform: translateY(0); }
+
+/* Scrollbar inside registration card */
+.reg-card::-webkit-scrollbar { width: 5px; }
+.reg-card::-webkit-scrollbar-track { background: transparent; }
+.reg-card::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+/* Session info on waiting screen */
+.waiting-session-info {
+  font-size: 0.95rem;
+  color: #555;
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+}
+
+/* ── Waiting screen ───────────────────────────────────────────────────────── */
+.lab-logo {
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  color: var(--accent);
+  text-shadow: 0 0 40px rgba(79,195,247,.4);
+}
+
+.waiting-text {
+  font-size: 1.4rem;
+  color: #888;
+  letter-spacing: 0.05em;
+}
+
+.ws-indicator {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: #444;
+  transition: background 0.4s;
+}
+.ws-indicator.connected { background: var(--accent2); box-shadow: 0 0 8px var(--accent2); }
+.ws-indicator.disconnected { background: var(--danger); }
+
+/* ── Fixation cross ───────────────────────────────────────────────────────── */
+.fixation-cross {
+  font-size: clamp(6rem, 18vw, 14rem);
+  font-weight: 200;
+  color: var(--fg);
+  line-height: 1;
+  letter-spacing: -0.05em;
+}
+
+.fixation-instruction {
+  margin-top: 1.8rem;
+  font-size: clamp(1rem, 2.2vw, 1.5rem);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.55);
+  text-align: center;
+  line-height: 1.8;
+}
+
+.fixation-instruction-en {
+  font-size: 0.8em;
+  color: rgba(255,255,255,.35);
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: 0.08em;
+}
+
+/* ── Baseline ─────────────────────────────────────────────────────────────── */
+.baseline-label {
+  font-size: 1.1rem;
+  color: #666;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ── Stimulus ─────────────────────────────────────────────────────────────── */
+.stimulus-layout { gap: 16px; position: relative; }
+
+.emotion-name {
+  font-size: clamp(3.5rem, 10vw, 8rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--fg);
+  text-transform: uppercase;
+  text-shadow: 0 2px 24px rgba(255,255,255,.08);
+  animation: fadeInUp 0.3s ease;
+  line-height: 1;
+}
+
+.emotion-name-en {
+  font-size: clamp(1.4rem, 3.5vw, 2.8rem);
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  color: #555;
+  text-transform: uppercase;
+  animation: fadeInUp 0.3s ease 0.05s both;
+  line-height: 1;
+}
+
+.emotion-instruction {
+  font-size: clamp(0.95rem, 2vw, 1.35rem);
+  color: #bbb;
+  max-width: 680px;
+  line-height: 1.6;
+  animation: fadeInUp 0.3s ease 0.1s both;
+  text-align: center;
+}
+
+.emotion-instruction-en {
+  color: #555;
+  font-style: italic;
+  animation-delay: 0.15s;
+}
+
+/* Countdown ring */
+#countdown-ring, #countdown-ring-m {
+  width: clamp(80px, 12vw, 130px);
+  height: clamp(80px, 12vw, 130px);
+  margin-top: 8px;
+  transform: rotate(-90deg);
+}
+
+.ring-bg {
+  fill: none;
+  stroke: #2a2a2a;
+  stroke-width: 6;
+}
+
+.ring-fg {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.25s linear;
+}
+
+.countdown-number {
+  position: absolute;
+  bottom: calc(50% - clamp(80px, 12vw, 130px) / 2);
+  font-size: clamp(1.4rem, 3vw, 2.2rem);
+  font-weight: 600;
+  color: var(--accent);
+  pointer-events: none;
+}
+
+/* ── Mirror stimulus overlay ──────────────────────────────────────────────── */
+
+/*
+ * When mirror is active the stimulus screen splits into:
+ *   - stim-mirror-overlay (full screen flex column)
+ *       - stim-mirror-top  (instructions at top, fixed height)
+ *       - stim-mirror-ring (countdown, sits below the mirror)
+ * The webcam (#mirror-container) is centered absolutely by .mirror-active rules.
+ */
+
+.stim-mirror-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3vh 5vw 4vh;
+  pointer-events: none;
+}
+
+/* .stim-mirror-overlay.hidden — handled by .hidden utility above */
+
+.stim-mirror-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  max-width: 800px;
+  text-align: center;
+  z-index: 6;
+}
+
+.emotion-name-mirror {
+  font-size: clamp(2rem, 5vw, 4.5rem);
+}
+
+.emotion-name-en-mirror {
+  font-size: clamp(1rem, 2.5vw, 2rem);
+}
+
+.stim-mirror-ring {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 6;
+}
+
+/* ── Relax screen ─────────────────────────────────────────────────────────── */
+.relax-word {
+  font-size: clamp(4rem, 12vw, 10rem);
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  color: var(--accent2);
+  text-shadow: 0 0 60px rgba(129,199,132,.25);
+  animation: fadeInUp 0.25s ease;
+}
+
+.relax-bar-wrap        { width: clamp(200px, 40vw, 500px); }
+.relax-bar-mirror-wrap { width: clamp(200px, 50vw, 600px); }
+.relax-word-mirror     { font-size: clamp(2.5rem, 6vw, 5rem); }
+
+/* ── Progress bar ─────────────────────────────────────────────────────────── */
+.progress-bar-wrap {
+  width: clamp(200px, 50vw, 600px);
+  height: 6px;
+  background: #222;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transform-origin: left;
+  transform: scaleX(1);
+  transition: transform linear;
+}
+
+.relax-bar { background: var(--accent2); }
+
+/* ── Rest screen ──────────────────────────────────────────────────────────── */
+.rest-word {
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 300;
+  letter-spacing: 0.25em;
+  color: var(--warn);
+}
+
+.rest-text {
+  font-size: 1.2rem;
+  color: #888;
+  max-width: 560px;
+  line-height: 1.6;
+}
+
+.rest-countdown {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 600;
+  color: var(--warn);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Done screen ──────────────────────────────────────────────────────────── */
+.done-icon {
+  font-size: clamp(4rem, 10vw, 8rem);
+  color: var(--accent2);
+}
+
+.done-text {
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  color: #ccc;
+  line-height: 1.7;
+}
+
+/* ── Lateral side cues (contempt trials) ─────────────────────────────────── */
+/*
+ * The mirror square is centered at left:50%, top:54%, width:min(56vw,70vh).
+ * Half-width = min(28vw, 35vh).  Cues sit just outside each edge.
+ */
+.side-cue {
+  position: fixed;
+  top:       54%;
+  transform: translateY(-50%);
+  font-size: clamp(4rem, 10vw, 8rem);
+  font-weight: 700;
+  color: var(--accent);
+  z-index: 6;
+  pointer-events: none;
+  user-select: none;
+  transition: opacity 0.2s;
+}
+
+.side-cue-left  { right: calc(50% + min(28vw, 35vh) + 1.5rem); }
+.side-cue-right { left:  calc(50% + min(28vw, 35vh) + 1.5rem); }
+
+/* ── Webcam mirror ────────────────────────────────────────────────────────── */
+
+/* Default: hidden */
+#mirror-container {
+  display: none;
+  position: fixed;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 2px solid rgba(79,195,247,.3);
+  box-shadow: 0 4px 32px rgba(0,0,0,.7);
+  background: #000;
+  z-index: 5;
+  transition: width 0.2s, height 0.2s;
+}
+
+/* Visible + centered — used whenever mirror is active */
+#mirror-container.visible {
+  display: block;
+  left:   50%;
+  top:    54%;           /* slightly below vertical center to leave room for text above */
+  transform: translate(-50%, -50%);
+  width:  min(56vw, 70vh);
+  aspect-ratio: 4 / 3;
+}
+
+#mirror-video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transform: scaleX(-1);   /* true mirror */
+}
+
+#mirror-label {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: rgba(255,255,255,.4);
+  text-transform: uppercase;
+}
+
+/* ── Experimenter overlay ─────────────────────────────────────────────────── */
+#exp-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+  transition: opacity 0.2s;
+}
+
+#exp-overlay.hidden {
+  display: none;
+}
+
+#exp-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  padding: 28px 32px;
+  width: min(680px, 95vw);
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-shadow: 0 16px 64px rgba(0,0,0,.7);
+}
+
+.exp-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.exp-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.04em;
+}
+
+.exp-hint {
+  font-size: 0.75rem;
+  color: #555;
+  background: #1e2430;
+  border: 1px solid #333;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-family: var(--font-mono);
+}
+
+.exp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.exp-card {
+  background: #0d1117;
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.exp-card-label {
+  font-size: 0.72rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ── Badges ───────────────────────────────────────────────────────────────── */
+.badge {
+  display: inline-block;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 5px;
+  font-family: var(--font-mono);
+  width: fit-content;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge-info { background: rgba(79,195,247,.12); color: var(--accent); border: 1px solid rgba(79,195,247,.25); }
+.badge-warn { background: rgba(255,183,77,.12);  color: var(--warn);   border: 1px solid rgba(255,183,77,.25); }
+.badge-ok   { background: rgba(129,199,132,.12); color: var(--accent2);border: 1px solid rgba(129,199,132,.25); }
+.badge-err  { background: rgba(239,83,80,.12);   color: var(--danger); border: 1px solid rgba(239,83,80,.25); }
+
+/* ── Experimenter controls ────────────────────────────────────────────────── */
+.exp-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.exp-btn {
+  flex: 1;
+  min-width: 120px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  letter-spacing: 0.03em;
+}
+
+.exp-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.exp-btn:not(:disabled):hover { opacity: 0.85; transform: translateY(-1px); }
+.exp-btn:not(:disabled):active { transform: translateY(0); }
+
+.btn-green  { background: #1f6b37; color: #d2f5dc; }
+.btn-yellow { background: #7a5a00; color: #ffe082; }
+.btn-red    { background: #7a1c1c; color: #ffcdd2; }
+
+/* ── Trial list ───────────────────────────────────────────────────────────── */
+.exp-section-label {
+  font-size: 0.75rem;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: -10px;
+}
+
+.exp-trial-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 32px;
+}
+
+.trial-chip {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: #1e2430;
+  border: 1px solid #2a3044;
+  color: #aaa;
+  transition: background 0.2s, color 0.2s;
+}
+
+.trial-chip.done    { background: #1a2e1a; color: #6a9e6a; border-color: #2a4a2a; text-decoration: line-through; }
+.trial-chip.current { background: rgba(79,195,247,.15); color: var(--accent); border-color: rgba(79,195,247,.4); font-weight: 700; }
+
+/* ── Notes ────────────────────────────────────────────────────────────────── */
+.exp-notes {
+  width: 100%;
+  background: #0d1117;
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  color: var(--fg);
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.exp-notes:focus { border-color: var(--accent); }
+
+/* ── Animations ───────────────────────────────────────────────────────────── */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Scrollbar (panel) ────────────────────────────────────────────────────── */
+#exp-panel::-webkit-scrollbar { width: 6px; }
+#exp-panel::-webkit-scrollbar-track { background: transparent; }
+#exp-panel::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+/* ── Extra experimenter button colours ────────────────────────────────────── */
+.btn-blue { background: #1a3a5c; color: #90caf9; }
+.btn-blue:not(:disabled):hover { background: #1e4570; }
+
+/* Language toggle — shows current active language */
+.btn-lang {
+  background: #1a2535;
+  color: var(--accent);
+  border: 1px solid rgba(79,195,247,.4);
+  min-width: 56px;
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+}
+.btn-lang:hover { background: #1f3045; }
+
+/* ── Expressions lightbox ─────────────────────────────────────────────────── */
+#lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* .hidden on #lightbox handled by the global .hidden rule */
+
+#lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+}
+
+#lightbox-content {
+  position: relative;
+  z-index: 201;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 24px;
+  max-width: 94vw;
+  max-height: 94vh;
+}
+
+#lightbox-img {
+  max-width: 100%;
+  max-height: calc(94vh - 80px);
+  object-fit: contain;
+  border-radius: 10px;
+  box-shadow: 0 8px 64px rgba(0,0,0,.8);
+}
+
+#lightbox-close {
+  background: #1e2430;
+  border: 1px solid var(--panel-border);
+  color: #ccc;
+  padding: 9px 28px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  letter-spacing: 0.04em;
+}
+
+#lightbox-close:hover { background: #2a3248; color: var(--fg); }
+
+/* ── Bilingual inline spans ───────────────────────────────────────────────── */
+/* .t-fr shown by default; .t-en hidden. Swapped when html.lang-en is set.   */
+.t-en { display: none; }
+html.lang-en .t-fr { display: none; }
+html.lang-en .t-en { display: inline; }
+
+/* ── Language switching — participant display ─────────────────────────────── */
+/*
+ * Default (FR mode): French text is large/bright, English is small/dimmed.
+ * .lang-en on <html>: English text is promoted, French is demoted.
+ */
+
+/* Promote English emotion name */
+html.lang-en .emotion-name {
+  font-size: clamp(1.4rem, 3.5vw, 2.8rem);
+  color: #555;
+  font-weight: 400;
+  letter-spacing: 0.18em;
+}
+html.lang-en .emotion-name-en {
+  font-size: clamp(3.5rem, 10vw, 8rem);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--fg);
+  text-shadow: 0 2px 24px rgba(255,255,255,.08);
+}
+html.lang-en .emotion-name-mirror {
+  font-size: clamp(1rem, 2.5vw, 2rem);
+}
+html.lang-en .emotion-name-en-mirror {
+  font-size: clamp(2rem, 5vw, 4.5rem);
+}
+
+/* Promote English instruction */
+html.lang-en .emotion-instruction {
+  color: #555;
+  font-style: italic;
+}
+html.lang-en .emotion-instruction-en {
+  color: #bbb;
+  font-style: normal;
+}
+
+/* Promote English fixation text */
+html.lang-en .fixation-instruction {
+  font-size: clamp(0.8rem, 1.8vw, 1.2rem);
+  color: rgba(255,255,255,.35);
+}
+html.lang-en .fixation-instruction-en {
+  font-size: clamp(1rem, 2.2vw, 1.5rem);
+  color: rgba(255,255,255,.55);
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}

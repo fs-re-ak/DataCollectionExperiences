@@ -1,0 +1,7 @@
+bleak
+fastapi
+uvicorn[standard]
+numpy
+pandas
+scipy
+matplotlib

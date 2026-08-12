@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.venv/
+venv/
+env/
+.env
+pip-wheel-metadata/
+
+# Data — ignore all session content but keep the folder tracked
+data/**
+!data/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db

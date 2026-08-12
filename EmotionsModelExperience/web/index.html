@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RE-AK — Modèle des Émotions 2026</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       PARTICIPANT DISPLAY  (full-screen, always visible)
+  ══════════════════════════════════════════════════════════════════════ -->
+  <div id="participant-view">
+
+    <!-- Webcam mirror (shown only when mirror=true) -->
+    <div id="mirror-container">
+      <video id="mirror-video" autoplay muted playsinline></video>
+      <div id="mirror-label">Miroir</div>
+    </div>
+
+    <!-- Lateral direction cues for contempt trials (shown next to the square) -->
+    <div id="side-cue-left"  class="side-cue side-cue-left  hidden">&lt;</div>
+    <div id="side-cue-right" class="side-cue side-cue-right hidden">&gt;</div>
+
+    <!-- ── REGISTRATION screen (initially active) ── -->
+    <div id="screen-registration" class="screen active">
+      <div class="reg-card">
+
+        <div class="reg-header">
+          <div class="lab-logo-sm">RE-AK</div>
+          <div class="reg-title">Nouvelle session</div>
+          <div class="ws-indicator" id="ws-dot"></div>
+        </div>
+
+        <!-- ── Participant info ── -->
+        <div class="reg-section-label">Participant</div>
+        <div class="reg-form">
+          <label class="reg-label" for="inp-pid">ID participant <span class="req">*</span></label>
+          <input id="inp-pid" class="reg-input" type="text" placeholder="ex. P001" autocomplete="off" />
+
+          <label class="reg-label" for="inp-session">Numéro de session</label>
+          <input id="inp-session" class="reg-input" type="number" value="1" min="0" />
+
+          <label class="reg-label" for="inp-experimenter">Expérimentateur</label>
+          <input id="inp-experimenter" class="reg-input" type="text" placeholder="Identifiant (optionnel)" />
+        </div>
+
+        <!-- ── Data directory ── -->
+        <div class="reg-section-label">Dossier de données</div>
+        <div class="reg-row-browse">
+          <input id="inp-data-dir" class="reg-input reg-input-path" type="text" value="data" />
+          <button id="btn-browse" class="reg-btn-browse" title="Parcourir…">&#128193;</button>
+        </div>
+
+        <!-- ── BLE device ── -->
+        <div id="ble-section">
+          <div class="reg-section-label">Appareil Hermes</div>
+          <div class="reg-ble-row">
+            <button id="btn-scan" class="reg-btn-scan">
+              <span id="scan-spinner" class="spinner hidden"></span>
+              Rechercher les appareils
+            </button>
+          </div>
+
+          <div id="device-select-wrap" class="hidden">
+            <select id="sel-device" class="reg-select">
+              <option value="">— Sélectionner un appareil —</option>
+            </select>
+          </div>
+
+          <div id="scan-status" class="scan-status"></div>
+        </div>
+
+        <!-- ── Connect status ── -->
+        <div id="connect-status" class="connect-status hidden"></div>
+
+        <!-- ── Submit ── -->
+        <button id="btn-register" class="btn-register" disabled>
+          Connexion et configuration
+        </button>
+
+      </div>
+    </div>
+
+    <!-- ── WAITING screen ── -->
+    <div id="screen-waiting" class="screen">
+      <div class="center-content">
+        <div class="lab-logo">RE-AK</div>
+        <p class="waiting-text">
+          <span class="t-fr">En attente du début de la session…</span>
+          <span class="t-en">Waiting for the session to start…</span>
+        </p>
+        <p id="waiting-session-info" class="waiting-session-info"></p>
+      </div>
+    </div>
+
+    <!-- ── BASELINE screen ── -->
+    <div id="screen-baseline" class="screen">
+      <div class="center-content">
+        <div class="fixation-cross">+</div>
+        <p id="baseline-label" class="baseline-label"></p>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" id="baseline-bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FIXATION screen ── -->
+    <div id="screen-fixation" class="screen">
+      <div class="center-content">
+        <div class="fixation-cross">+</div>
+        <p class="fixation-instruction">Fixez la croix<br><span class="fixation-instruction-en">Fix the cross</span></p>
+      </div>
+    </div>
+
+    <!-- ── STIMULUS screen ── -->
+    <div id="screen-stimulus" class="screen">
+      <!-- Normal layout (no mirror) -->
+      <div class="center-content stimulus-layout" id="stim-normal">
+        <div id="stim-emotion-name-a"    class="emotion-name"></div>
+        <div id="stim-emotion-name-en-a" class="emotion-name-en"></div>
+        <div id="stim-instruction-fr-a"  class="emotion-instruction"></div>
+        <div id="stim-instruction-en-a"  class="emotion-instruction emotion-instruction-en"></div>
+        <svg id="countdown-ring" viewBox="0 0 120 120" aria-hidden="true">
+          <circle class="ring-bg" cx="60" cy="60" r="54"/>
+          <circle class="ring-fg" id="ring-arc" cx="60" cy="60" r="54"
+                  stroke-dasharray="339.3" stroke-dashoffset="0"/>
+        </svg>
+        <div id="countdown-number" class="countdown-number"></div>
+      </div>
+
+      <!-- Mirror layout — instructions float above the centered webcam -->
+      <div id="stim-mirror-overlay" class="stim-mirror-overlay hidden">
+        <div class="stim-mirror-top">
+          <div id="stim-emotion-name-b"    class="emotion-name emotion-name-mirror"></div>
+          <div id="stim-emotion-name-en-b" class="emotion-name-en emotion-name-en-mirror"></div>
+          <div id="stim-instruction-fr-b"  class="emotion-instruction"></div>
+          <div id="stim-instruction-en-b"  class="emotion-instruction emotion-instruction-en"></div>
+        </div>
+        <div class="stim-mirror-ring">
+          <svg id="countdown-ring-m" viewBox="0 0 120 120" aria-hidden="true">
+            <circle class="ring-bg" cx="60" cy="60" r="54"/>
+            <circle class="ring-fg" id="ring-arc-m" cx="60" cy="60" r="54"
+                    stroke-dasharray="339.3" stroke-dashoffset="0"/>
+          </svg>
+          <div id="countdown-number-m" class="countdown-number"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RELAX screen ── -->
+    <div id="screen-relax" class="screen">
+
+      <!-- Normal layout (no mirror) — text centered -->
+      <div id="relax-normal" class="center-content">
+        <div class="relax-word">RELAX</div>
+        <div class="progress-bar-wrap relax-bar-wrap">
+          <div class="progress-bar relax-bar" id="relax-bar"></div>
+        </div>
+      </div>
+
+      <!-- Mirror layout — text above the centered webcam -->
+      <div id="relax-mirror-overlay" class="stim-mirror-overlay hidden">
+        <div class="stim-mirror-top">
+          <div class="relax-word relax-word-mirror">RELAX</div>
+          <div class="progress-bar-wrap relax-bar-mirror-wrap">
+            <div class="progress-bar relax-bar" id="relax-bar-m"></div>
+          </div>
+        </div>
+        <div></div><!-- bottom spacer keeps text pinned to top -->
+      </div>
+
+    </div>
+
+    <!-- ── REST screen ── -->
+    <div id="screen-rest" class="screen">
+      <div class="center-content">
+        <div class="rest-word">PAUSE</div>
+        <p class="rest-text">
+          <span class="t-fr">Détendez-vous, la prochaine séquence commence dans…</span>
+          <span class="t-en">Relax, the next sequence starts in…</span>
+        </p>
+        <div id="rest-countdown" class="rest-countdown"></div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" id="rest-bar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DONE screen ── -->
+    <div id="screen-done" class="screen">
+      <div class="center-content">
+        <div class="done-icon">✓</div>
+        <p class="done-text">
+          <span class="t-fr">Session terminée.<br>Merci pour votre participation !</span>
+          <span class="t-en">Session complete.<br>Thank you for your participation!</span>
+        </p>
+      </div>
+    </div>
+
+  </div><!-- /participant-view -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       EXPERIMENTER OVERLAY  (toggled with F1)
+  ══════════════════════════════════════════════════════════════════════ -->
+  <div id="exp-overlay" class="hidden">
+    <div id="exp-panel">
+
+      <div class="exp-header">
+        <span class="exp-title">Panneau expérimentateur</span>
+        <kbd class="exp-hint">F1 pour masquer</kbd>
+      </div>
+
+      <div class="exp-grid">
+        <div class="exp-card">
+          <div class="exp-card-label">Connexion WS</div>
+          <div id="exp-ws-status" class="badge badge-warn">—</div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-card-label">Participant / Session</div>
+          <div id="exp-pid" class="badge badge-info">—</div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-card-label">Bloc / Essai</div>
+          <div id="exp-block-trial" class="badge badge-info">—</div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-card-label">Durée écoulée</div>
+          <div id="exp-elapsed" class="badge badge-info">0 s</div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-card-label">État</div>
+          <div id="exp-state" class="badge badge-info">—</div>
+        </div>
+        <div class="exp-card">
+          <div class="exp-card-label">Miroir</div>
+          <div id="exp-mirror" class="badge badge-info">—</div>
+        </div>
+      </div>
+
+      <div class="exp-controls">
+        <button id="btn-expressions" class="exp-btn btn-blue" title="Afficher le guide des expressions">&#128247; Expressions</button>
+        <button id="btn-lang"        class="exp-btn btn-lang" title="Basculer la langue participant">FR</button>
+        <button id="btn-start"  class="exp-btn btn-green">&#9654; Démarrer</button>
+        <button id="btn-pause"  class="exp-btn btn-yellow" disabled>&#9208; Pause</button>
+        <button id="btn-resume" class="exp-btn btn-green"  disabled style="display:none">&#9654; Reprendre</button>
+        <button id="btn-abort"  class="exp-btn btn-red"    disabled>&#x2715; Interrompre</button>
+      </div>
+
+      <div class="exp-section-label">Ordre des essais (bloc actuel)</div>
+      <div id="exp-trial-list" class="exp-trial-list"></div>
+
+      <div class="exp-section-label">Notes de session</div>
+      <textarea id="exp-notes" class="exp-notes" placeholder="Observations, incidents…" rows="3"></textarea>
+
+    </div>
+  </div><!-- /exp-overlay -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       EXPRESSIONS LIGHTBOX  (toggled by Expressions button)
+  ══════════════════════════════════════════════════════════════════════ -->
+  <div id="lightbox" class="hidden">
+    <div id="lightbox-backdrop"></div>
+    <div id="lightbox-content">
+      <img id="lightbox-img" src="/assets/FacialExpressions.png" alt="Guide des expressions faciales" />
+      <button id="lightbox-close">&#x2715; Fermer / Close</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
